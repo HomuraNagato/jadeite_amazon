@@ -22,7 +22,7 @@ Once this is found, seller information can be gathered and put in the database, 
 table. Additionally one remove by asin, filter for a specific asin, or clear to display the entire database.
 
 
-[What the page looks like](data/images/amazon_site_page.png)
+![What the page looks like](data/images/amazon_site_page.png?raw=True "What the page looks like")
 
 Product Calculator
 
