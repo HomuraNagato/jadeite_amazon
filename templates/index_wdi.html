@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Homura Nagato's Central Dogma</title>
+    <!-- <link href="styles/responsive.css" rel="stylesheet" type="text/css"> -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    
+    <!-- Load React. -->
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script> -->
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+
+    
+  </head>
+  
+  <head lang="en">
+    <meta charset="UTF-8">
+    <title>My First Dashboard</title>
+  </head>
+  
+  <body>
+
+    <div id="hello-container"></div>
+
+    <div class="content">
+      <h2>ようこそう！　文法　１</h2>
+      <p>私は料理が得意です。</p>
+      <p>（わたし）は（りょうり）が（とくい）です。</p>
+      <p>I'm good at cooking.</p>
+
+      <h2>ようこそう！　文法　２</h2>
+      <p>図書館は勉強するのに良い場所です。</p>
+      <p>（としょかん）は（べんきょう）するのに（よ）い（ばしょ）です。</p>
+      <p>The library is a good place to study.</p>
+    </div>
+
+
+    <div id="like_button_container"></div>
+    <!--        -->
+    <div id="increment-container"></div>
+    
+    <div id="increment-container-2"></div>
+
+    <div id="name-container"></div>    
+
+
+      <div class="chart" id="bargraph">
+	<script>
+	  var graphs = {{bar | safe}};
+	  Plotly.plot('bargraph',graphs,{});
+	</script>
+      </div>
+
+
+    <div class="container">
+      <label> Choose the y axis</label>
+      <select class="form-control" id ="y-axis-dropdown">
+	<option value="Birth rate, crude (per 1,000 people)">Birth Rate</option>
+	<option value="Death rate, crude (per 1,000 people)">Death Rate</option>
+	<option value="Consumer price index (2010 = 100)">Consumer index</option>
+      </select>
+
+      <label> Choose the x axis</label>
+      <select class="form-control" id ="x-axis-dropdown">
+	<option value="Birth rate, crude (per 1,000 people)">Birth Rate</option>
+	<option value="Death rate, crude (per 1,000 people)">Death Rate</option>
+	<option value="Consumer price index (2010 = 100)">Consumer index</option>
+      </select>
+      
+      <div class="chart" id="scattergraph">
+	<script>
+	  var graphs = {{scatter | safe}};
+	  Plotly.plot("scattergraph",graphs,{});
+	</script>
+      </div>
+
+      <div class="chart" id="scattertable">
+	<script>
+	  var tables = {{table | safe}};
+	  Plotly.plot("scattertable",tables,{});
+	</script>
+      </div>
+      
+    </div>
+    
+    
+  </body>
+    
+    
+
+    <script>
+    $("#x-axis-dropdown").on('change', function() {
+
+	$.ajax({
+	    url: "/bar",
+	    type: "GET",
+	    contentType: "application/json;charset=UTF-8",
+	    data: {
+                    'selected-x': document.getElementById("x-axis-dropdown").value,
+                    'selected-y': document.getElementById("y-axis-dropdown").value
+
+	    },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattergraph", data );
+	    }
+
+	});
+    });
+    
+    $("#y-axis-dropdown").on('change', function() {
+
+	$.ajax({
+	    url: "/bar",
+	    type: "GET",
+	    contentType: "application/json;charset=UTF-8",
+	    data: {
+                    'selected-x': document.getElementById("x-axis-dropdown").value,
+                    'selected-y': document.getElementById("y-axis-dropdown").value
+
+	    },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattergraph", data );
+	    }
+
+	});
+    });
+    </script>
+
+
+    
+  
+</html>
+

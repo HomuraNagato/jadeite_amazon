@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Homura Nagato's Central Dogma</title>
+    <!--<link href="styles/responsive.css" rel="stylesheet" type="text/css">-->
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/responsive.css') }}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    
+    <!-- Load React. -->
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+
+    
+  </head>
+  
+  <head lang="en">
+    <meta charset="UTF-8">
+    <title>My First Dashboard</title>
+  </head>
+  
+  <body>
+    <div id="wrapper">
+	<div class="content">
+	  <h2>ようこそう!</h2>
+	</div>
+
+	<div class="content">
+	  <h3> Amazon Product (asin)</h3>
+	  <input type="text" value="" id="asin_text">
+	  <button id="asin_filter">filter</button>
+	  <button id="asin_add">add</button>
+	  <button id="asin_delete">delete</button>
+	  <button id="asin_clear">clear</button>
+	</div>
+	
+	<div id="hero">
+	  <div id="scattertable">
+	    <script>
+	      var tables = {{table | safe}};
+	      Plotly.plot("scattertable",tables,{});
+	    </script>
+	  </div>
+	</div>
+      
+	<!--
+	  <div class="chart" id="scattergraph">
+	    <script>
+	      var graphs = {{scatter | safe}};
+	      Plotly.plot("scattergraph",graphs,{});
+	    </script>
+	  </div>
+
+
+	<div class="container">
+	  <label> Choose the y axis</label>
+	  <select class="form-control" id ="y-axis-dropdown">
+	    <option value="Birth rate, crude (per 1,000 people)">Birth Rate</option>
+	    <option value="Death rate, crude (per 1,000 people)">Death Rate</option>
+	    <option value="Consumer price index (2010 = 100)">Consumer index</option>
+	  </select>
+
+	  <label> Choose the x axis</label>
+	  <select class="form-control" id ="x-axis-dropdown">
+	    <option value="Birth rate, crude (per 1,000 people)">Birth Rate</option>
+	    <option value="Death rate, crude (per 1,000 people)">Death Rate</option>
+	    <option value="Consumer price index (2010 = 100)">Consumer index</option>
+
+	  </select>
+	</div>
+	  -->
+
+	<form class="content">
+	  <h3> Product Calculator</h3>	  
+	  <label>Product Sell price: <input type="text" class="calc" name="calc_sell"> </label>
+	  <label>Product Buy price: <input  type="text" class="calc" name="calc_buy"> </label>
+	  <label>Product shipping cost: <input  type="text" class="calc" name="calc_shipping"> </label>
+	  <label>Amount purchased: <input  type="text" class="calc" name="calc_amount"> </label>
+	  <label>Percent gain per unit: <input type="text" class="calc" name="percent_gain" /> </label>
+	  <label>Total Expected gain: <input type="text" class="calc" name="expected_gain" /> </label>
+	</form>
+    </div>
+	
+  </body>
+    
+  <script>
+
+    // product calculator
+    // help with jquery inputs
+    // https://stackoverflow.com/questions/8900209/automatically-updating-input-field-with-math-using-jquery
+    // locate all the input fields on the page
+    $(":input")
+    // bind to anything change related (down to keyboard changes so the element
+    // won't need to lose focus, or the user won't have to press enter)
+    .bind("keypress keydown keyup change",function(){
+    // retrieve the values of the inputs (we also call parseFloat to confirm
+    // we are dealing with numeric values)
+    var sell = parseFloat($(':input[name="calc_sell"]').val(),10),
+    buy = parseFloat($(':input[name="calc_buy"]').val(),10),
+    shipping = parseFloat($(':input[name="calc_shipping"]').val(),10),
+    amount = parseFloat($(':input[name="calc_amount"]').val(),10);    
+
+    // default the end result to an empty string (you'll see
+    // why with the following statement)
+    var percent_gain = '';
+    var expected_gain = '';    
+
+    // confirm that all three values that go in to the equation are
+    // all numbers before we try to perform any math functions. If
+    // all goes well, "v" above will have the actual resulting value.
+    // if any number is invalid, the "Result" field (ml) gets emptied
+    if (!isNaN(sell) && !isNaN(buy) && !isNaN(shipping) && !isNaN(amount)){
+        // your math function
+        percent_gain = (sell - buy - shipping) / (buy + shipping);
+        expected_gain = (sell - buy - shipping) * amount;    
+    }
+
+    // replace the value of "gains" with our new calculated value
+    $(':input[name="percent_gain"]').val(percent_gain.toString());
+    $(':input[name="expected_gain"]').val(expected_gain.toString());    
+    });
+  </script>    
+
+  <script>
+
+    $("#asin_filter").on('click', function() {
+        $.ajax({
+            url: "/table",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            data: {
+                'asin': document.getElementById("asin_text").value,
+                'action': "filter"
+            },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattertable", data );
+	    }
+	});
+    });
+    
+    $("#asin_add").on('click', function() {
+	$.ajax({
+	    url: "/table",
+	    type: "GET",
+	    contentType: "application/json;charset=UTF-8",
+	    data: {
+                'asin': document.getElementById("asin_text").value,
+                'action': "add"
+	    },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattertable", data );
+	    }
+	});
+    });
+    
+    $("#asin_delete").on('click', function() {
+        $.ajax({
+            url: "/table",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            data: {
+                'asin': document.getElementById("asin_text").value,
+                'action': "delete"
+            },
+            dataType:"json",
+            success: function (data) {
+                Plotly.newPlot("scattertable", data );
+            }
+        });
+    });
+    
+    $("#asin_clear").on('click', function() {
+        $.ajax({
+            url: "/table",
+            type: "GET",
+            contentType: "application/json;charset=UTF-8",
+            data: {
+                'asin': "",
+                'action': "clear"
+            },
+            dataType:"json",
+            success: function (data) {
+                Plotly.newPlot("scattertable", data );
+            }
+        });
+    document.getElementById("asin_text").value = "";
+    });
+
+  </script>
+  
+  <script>
+
+    $("#x-axis-dropdown").on('change', function() {
+
+	$.ajax({
+	    url: "/bar",
+	    type: "GET",
+	    contentType: "application/json;charset=UTF-8",
+	    data: {
+                    'selected-x': document.getElementById("x-axis-dropdown").value,
+                    'selected-y': document.getElementById("y-axis-dropdown").value
+
+	    },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattergraph", data );
+	    }
+
+	});
+    });
+    
+    $("#y-axis-dropdown").on('change', function() {
+
+	$.ajax({
+	    url: "/bar",
+	    type: "GET",
+	    contentType: "application/json;charset=UTF-8",
+	    data: {
+                    'selected-x': document.getElementById("x-axis-dropdown").value,
+                    'selected-y': document.getElementById("y-axis-dropdown").value
+
+	    },
+	    dataType:"json",
+	    success: function (data) {
+		Plotly.newPlot("scattergraph", data );
+	    }
+
+	});
+    });
+  </script>
+
+  
+</html>
+
