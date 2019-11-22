@@ -16,7 +16,7 @@ on http address in a web browser.
 Amazon ASIN's (Amazon Standard Identification Number) found for many products sold on amazon.com can be found
 in the product information table for the product, an example below
 
-[ASIN for Sony WH1000XM3 headphones](data/images/amazon_site_product_asin_location.png)
+![ASIN for Sony WH1000XM3 headphones](data/images/amazon_site_product_asin_location.png?raw=True "find asin on product page")
 
 Once this is found, seller information can be gathered and put in the database, formated, and displayed as a
 table. Additionally one remove by asin, filter for a specific asin, or clear to display the entire database.
