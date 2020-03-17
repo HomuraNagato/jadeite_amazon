@@ -6,7 +6,9 @@ selling on their site.
 
 ## Initialization
 
-Currently deployed locally. Ensure dependant packages are downloaded. Check that postgresql is
+Currently deployed locally. Ensure dependant packages are downloaded. Follow comments at top of programs/jadeite_sellers.py
+to create a database and table. create a yaml file in same location as user.yaml.example but renamed without the trailing
+.example with username and password substituted. Check that postgresql is
 started. Start with the command: `sudo service postgresql restart`. Other helpful commands (in place of `restart`)
 are: `status` and `stop`. Once the database is running, start the service with: `python main.py`. Copy the running
 on http address in a web browser.

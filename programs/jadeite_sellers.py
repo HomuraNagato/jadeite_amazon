@@ -27,13 +27,22 @@ B00008XEWG
 Settings for connecting to postgres
 helpful links
 https://realpython.com/flask-by-example-part-2-postgres-sqlalchemy-and-alembic/
-https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04
 https://stackoverflow.com/questions/31645550/why-psql-cant-connect-to-server
 
-service postgresql status/restart/stop
+follow along from this site to create a user if desired, afterwards, edit user.yaml
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-16-04
 
-psql -d pensieve
-\conninfo
+creating postgresql database from bash (for postgres user after setting up user and password)
+    sudo -u postgres createdb pensieve
+
+open postgresql interface to database
+    psql -d pensieve
+
+creating table in database for connection (within psql)
+    CREATE TABLE amazon_sellers (index serial PRIMARY KEY, seller_price text, company_name text, title text, asin text, product_price text, date date);
+
+starting postgresql service once user, database, and table have been created
+    sudo service postgresql status/start/restart/stop
 """
 
 from bs4 import BeautifulSoup   # create soup from webpage-object
@@ -50,11 +59,19 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from io import StringIO
 from csv import writer
 
+import yaml # conda install pyyaml
 from .jadeite_soup import *
 
 from sqlalchemy import create_engine
-#from postgres import *
-engine = create_engine('postgresql://postgres:Nagato13!#@localhost:5432/pensieve', echo=False)
+
+with open("user.yaml", 'r') as stream:
+    credentials = yaml.safe_load(stream)
+
+postgresql_login = 'postgresql://' + credentials['postgresql']['username'] + ':' + credentials['postgresql']['password'] + '@' + str(credentials['postgresql']['host']) + ':' + str(credentials['postgresql']['port']) + '/' + credentials['postgresql']['db']
+print("engine parameters", postgresql_login)
+# should be of format
+# postgresql://{user}:{password}@{host}:{port}/{db}
+engine = create_engine(postgresql_login, echo=False)
 conn = engine.connect()
 
 # for parsing known argument without consuming it in parse_args()
@@ -101,8 +118,8 @@ class Amazon:
         '''
         Given an ASIN, get the link to its product page
         '''
-        print("acquiring link to product page")
         url = 'https://www.amazon.com/s?k=' + self.asin
+        print("acquiring link to product page. url:", url)
         soup = soup_request(url)
         product_link = soup.select("a.a-link-normal.a-text-normal")[0]
         href, title = re.search('(.+)ref\=', product_link['href']).group(1), product_link.text.strip()

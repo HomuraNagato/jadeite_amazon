@@ -2,3 +2,4 @@
 data/
 programs/__pychache__/
 *~
+*.yaml
